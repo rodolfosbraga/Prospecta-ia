@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@200;300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Rajdhani', sans-serif;
+  background-color: #0D0D0D;
+  color: #F2DFCE;
+  line-height: 1.5;
+  padding: 20px;
+}
+
+h1, h2, h3 {
+  color: #F2DFCE;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.dashboard {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dashboard-title {
+  text-align: center;
+  border-bottom: 2px solid #735D55;
+  padding-bottom: 10px;
+}
+.dashboard-title h1 {
+  font-size: 2.2rem;
+  letter-spacing: 1px;
+}
+
+.header-blocks,
+.lead-detail-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-item,
+.lead-detail-item {
+  background-color: #011126;
+  color: #F2DFCE;
+  border-radius: 8px;
+  flex: 1;
+  min-width: 200px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+.item-header,
+.detail-header {
+  background-color: #011640;
+  padding: 10px;
+  font-weight: 600;
+  text-align: center;
+  color: #F2DFCE;
+}
+
+.item-content,
+.detail-content {
+  padding: 14px;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.table-container,
+.messages-container {
+  background-color: #011126;
+  border-radius: 8px;
+  overflow: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+thead {
+  background-color: #735D55;
+}
+
+thead th {
+  color: #F2DFCE;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom: 2px solid #735D55;
+  background-color: #735D55;
+}
+
+tbody tr {
+  transition: background 0.3s;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: #1A1A1A;
+}
+
+tbody tr:hover {
+  background-color: #292929;
+}
+
+tbody td {
+  padding: 10px;
+  font-size: 0.9rem;
+  color: #F2DFCE;
+  border-bottom: 1px solid #333;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .header-blocks,
+  .lead-detail-container {
+    flex-direction: column;
+  }
+
+  .table-container,
+  .messages-container {
+    height: auto;
+    overflow-x: auto;
+  }
+
+  thead th,
+  tbody td {
+    font-size: 0.8rem;
+    padding: 8px;
+  }
+}
