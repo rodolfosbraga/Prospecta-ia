@@ -2,144 +2,493 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Lista de Clientes - Supabase</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard de Leads capturados do Google</title>
+
   <style>
-    /* styling básico só pra deixar legível */
+    /* ===========================
+       0. RESET E ESTILIZAÇÕES GERAIS
+    ============================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #fafafa;
-      color: #333;
+      background-color: #000;
+      color: #fff;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.4;
+      padding: 20px;
     }
-    table {
-      width: 100%;
+    h1, h2, h3, h4 {
+      color: #fff;
+    }
+    /* Container geral */
+    .dashboard {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ===========================
+       1. TÍTULO PRINCIPAL
+    ============================ */
+    .dashboard-title {
+      text-align: center;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #444;
+    }
+    .dashboard-title h1 {
+      font-size: 2rem;
+      font-weight: 600;
+    }
+
+    /* ===========================
+       2. BLOCO DE CABEÇALHO: Empresa + Quantidade
+    ============================ */
+    .header-blocks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .header-item {
+      background-color: #fff;
+      color: #000;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-width: 200px;
+      flex: 1;
+    }
+    .header-item .item-header {
+      background-color: #ccc;
+      padding: 8px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    .header-item .item-content {
+      padding: 10px;
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    /* ===========================
+       3. TABELA PRINCIPAL DE LEADS
+       (altura fixa para scroll vertical + header sticky)
+    ============================ */
+    .table-container {
+      background-color: #fff;
+      border-radius: 4px;
+      position: relative;     /* Necessário para o sticky do thead */
+      overflow: auto;         /* rolagem vertical + horizontal */
+      height: 260px;          /* exibe ~5 linhas + header antes de rolar */
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    table.leads-table {
       border-collapse: collapse;
-      margin-top: 20px;
+      width: 100%;
+      min-width: 900px;       /* garante scrollbar horizontal se tela for estreita */
     }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px 12px;
+    table.leads-table thead {
+      background-color: #ccc;
+    }
+    table.leads-table thead th {
+      padding: 10px;
+      font-size: 0.9rem;
+      color: #000;
+      border: 1px solid #aaa;
       text-align: left;
+      position: sticky;
+      top: 0;                 /* fixa o cabeçalho no topo */
+      z-index: 5;             /* deve ficar acima das linhas do tbody */
+      background-color: #ccc; /* mantém opacidade, sem “vazar” linha abaixo */
     }
-    th {
-      background: #f0f0f0;
+    table.leads-table tbody tr {
+      cursor: pointer;        /* indica clique/touch possível */
+      -webkit-tap-highlight-color: rgba(0,0,0,0); /* remove highlight escuro no iOS/Android */
     }
-    tr:nth-child(even) {
-      background: #f9f9f9;
+    table.leads-table tbody tr:nth-child(odd) {
+      background-color: #f9f9f9;
+    }
+    table.leads-table tbody tr:hover {
+      background-color: #e0e0e0;
+    }
+    table.leads-table tbody td {
+      padding: 8px;
+      font-size: 0.9rem;
+      color: #000;
+      border: 1px solid #ddd;
+      white-space: nowrap;    /* evita quebra inesperada */
+    }
+
+    /* ===========================
+       4. DETALHES DO LEAD SELECIONADO
+    ============================ */
+    .lead-detail-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .lead-detail-item {
+      background-color: #fff;
+      color: #000;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-width: 200px;
+      flex: 1;
+    }
+    .lead-detail-item .detail-header {
+      background-color: #ccc;
+      padding: 8px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    .lead-detail-item .detail-content {
+      padding: 10px;
+      font-size: 1rem;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    /* ===========================
+       5. TABELA DE MENSAGENS
+       (altura reduzida para scroll vertical imediato + header sticky)
+    ============================ */
+    .messages-container {
+      background-color: #fff;
+      border-radius: 4px;
+      position: relative;     /* Necessário para o sticky do thead */
+      overflow: auto;         /* rolagem vertical + horizontal */
+      height: 120px;          /* menor para forçar scroll com poucas linhas */
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    table.messages-table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 900px;       /* força scroll horizontal em telas estreitas */
+    }
+    table.messages-table thead {
+      background-color: #ccc;
+    }
+    table.messages-table thead th {
+      padding: 8px;
+      font-size: 0.9rem;
+      color: #000;
+      border: 1px solid #aaa;
+      text-align: left;
+      position: sticky;
+      top: 0;                 /* fixa o cabeçalho */
+      z-index: 5;             /* fica acima das linhas do tbody */
+      background-color: #ccc; /* fundo opaco */
+    }
+    table.messages-table tbody tr:nth-child(odd) {
+      background-color: #f9f9f9;
+    }
+    table.messages-table tbody tr:hover {
+      background-color: #e0e0e0;
+    }
+    table.messages-table tbody td {
+      padding: 6px;
+      font-size: 0.9rem;
+      color: #000;
+      border: 1px solid #ddd;
+      vertical-align: top;
+      white-space: nowrap;
+    }
+
+    /* ===========================
+       6. RESPONSIVIDADE PARA MÓVEIS
+    ============================ */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      /* Empilha verticalmente os blocos de cabeçalho */
+      .header-blocks {
+        flex-direction: column;
+      }
+      /* Empilha verticalmente os blocos de detalhes (Telefone + Classificação) */
+      .lead-detail-container {
+        flex-direction: column;
+      }
+      /* Reduz fontes e padding nas tabelas para caber melhor */
+      table.leads-table thead th,
+      table.leads-table tbody td,
+      table.messages-table thead th,
+      table.messages-table tbody td {
+        font-size: 0.8rem;
+        padding: 6px 4px;
+      }
+      /* Ajusta altura dos containers para aproximadamente 4 linhas visíveis */
+      .table-container {
+        height: 200px;
+      }
+      .messages-container {
+        height: 100px;
+      }
+      /* Permite scroll horizontal nos containers */
+      .table-container,
+      .messages-container {
+        overflow-x: auto;
+      }
+      /* Não quebra linhas dentro das células */
+      table.leads-table,
+      table.messages-table {
+        white-space: nowrap;
+      }
     }
   </style>
 </head>
+
 <body>
-  <h1>Dados de Clientes (Supabase)</h1>
-  <div id="resultado">
-    <!-- A Tabela com os dados vindos do Supabase será injetada aqui -->
-    <p>Carregando dados…</p>
-  </div>
+  <div class="dashboard">
+    <!-- 1. TÍTULO PRINCIPAL -->
+    <div class="dashboard-title">
+      <h1>Dashboard de Leads capturados do Google</h1>
+    </div>
 
-  <!-- 1) Importa o SDK do Supabase JS via CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.29.0/dist/umd/index.min.js"></script>
+    <!-- 2. BLOCO DE CABEÇALHO: Empresa + Quantidade -->
+    <div class="header-blocks">
+      <!-- Empresa -->
+      <div class="header-item">
+        <div class="item-header">Empresa</div>
+        <div class="item-content" id="empresa-value">
+          Fulano da Silva
+        </div>
+      </div>
 
-  <!-- 2) Nosso código customizado vai aqui -->
-  <script>
-    // 1. Inicializar o Supabase Client com suas credenciais
-    const SUPABASE_URL = 'https://rynfsckraunchdtxqfhu.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5bmZzY2tyYXVuY2hkdHhxZmh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxMTM3MjcsImV4cCI6MjA2MTY4OTcyN30.3fT003TXrurai77kaX4TogPjyirMBQRuQPYfuaeyfWE
-';
+      <!-- Quantidade de Leads Capturadas -->
+      <div class="header-item">
+        <div class="item-header">Qtd de Leads Capturadas</div>
+        <div class="item-content" id="qtd-leads-value">
+          5
+        </div>
+      </div>
+    </div>
 
-    // Cria o client
-    const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // 2. Função para buscar os dados da tabela
-    async function fetchDados() {
-      // Substitua 'nome_da_tabela' pelo nome real da sua tabela no Supabase
-      const { data, error } = await supabase
-        .from('Capturas_google_maps')
-        .select(`
-          cliente_solicitante,
-          instancia_evo,
-          nome_da_empresa,
-          telefone,
-          endereco,
-          website,
-          rating,
-          reviews,
-          especialidades,
-          mensagem,
-          disparo,
-          data_envio,
-          delay
-        `)
-        .order('data_envio', { ascending: false }); // ex.: ordenar pela data de envio
-
-      if (error) {
-        console.error('Erro ao buscar dados:', error);
-        document.getElementById('resultado').innerHTML = `<p style="color:red">Erro ao carregar dados: ${error.message}</p>`;
-        return;
-      }
-
-      // 3. Montar dinamicamente uma tabela HTML com os resultados
-      montarTabela(data);
-    }
-
-    // 3. Função para criar uma tabela HTML a partir do array de objetos retornado
-    function montarTabela(registros) {
-      const container = document.getElementById('resultado');
-      if (!registros || registros.length === 0) {
-        container.innerHTML = '<p>Nenhum registro encontrado.</p>';
-        return;
-      }
-
-      // Cria elemento <table> e <thead>
-      let tabelaHTML = '<table>';
-      tabelaHTML += `
+    <!-- 3. TABELA PRINCIPAL DE LEADS -->
+    <div class="table-container">
+      <table class="leads-table" id="leads-table">
         <thead>
           <tr>
-            <th>Cliente Solicitante</th>
-            <th>Instância Evo</th>
-            <th>Nome da Empresa</th>
+            <!-- Coluna “Instância Evo” removida -->
+            <th>Lead</th>
             <th>Telefone</th>
             <th>Endereço</th>
             <th>Website</th>
-            <th>Rating</th>
             <th>Reviews</th>
             <th>Especialidades</th>
-            <th>Mensagem</th>
             <th>Disparo</th>
             <th>Data Envio</th>
             <th>Delay</th>
           </tr>
         </thead>
         <tbody>
-      `;
-
-      // Para cada objeto “registro” vindo do Supabase, criamos uma <tr>
-      registros.forEach(registro => {
-        tabelaHTML += `
-          <tr>
-            <td>${registro.cliente_solicitante ?? ''}</td>
-            <td>${registro.instancia_evo ?? ''}</td>
-            <td>${registro.nome_da_empresa ?? ''}</td>
-            <td>${registro.telefone ?? ''}</td>
-            <td>${registro.endereco ?? ''}</td>
-            <td>${registro.website ?? ''}</td>
-            <td>${registro.rating ?? ''}</td>
-            <td>${registro.reviews ?? ''}</td>
-            <td>${registro.especialidades ?? ''}</td>
-            <td>${registro.mensagem ?? ''}</td>
-            <td>${registro.disparo ?? ''}</td>
-            <td>${registro.data_envio ? new Date(registro.data_envio).toLocaleString() : ''}</td>
-            <td>${registro.delay ?? ''}</td>
+          <!-- 5 leads de exemplo (sem “Instância Evo”) -->
+          <tr data-id="1" data-classificacao="4.5">
+            <td>Empresa X</td>
+            <td>(11) 9999-0001</td>
+            <td>Rua das Flores, 123</td>
+            <td>www.exemplo.com.br</td>
+            <td>120</td>
+            <td>Clínica, Estética</td>
+            <td>Email</td>
+            <td>2025-06-06 10:15</td>
+            <td>2h</td>
           </tr>
-        `;
-      });
+          <tr data-id="2" data-classificacao="3.8">
+            <td>Loja Y</td>
+            <td>(11) 9888-1234</td>
+            <td>Av. Paulista, 999</td>
+            <td>www.lojay.com</td>
+            <td>45</td>
+            <td>Moda, Vestuário</td>
+            <td>WhatsApp</td>
+            <td>2025-06-06 11:45</td>
+            <td>30m</td>
+          </tr>
+          <tr data-id="3" data-classificacao="4.2">
+            <td>Serviços Z</td>
+            <td>(11) 9777-4321</td>
+            <td>Rua das Acácias, 45</td>
+            <td>www.servicosz.com</td>
+            <td>78</td>
+            <td>Beleza, SPA</td>
+            <td>Chat</td>
+            <td>2025-06-06 12:00</td>
+            <td>1h</td>
+          </tr>
+          <tr data-id="4" data-classificacao="4.9">
+            <td>Oficina W</td>
+            <td>(11) 9666-1234</td>
+            <td>Av. Brasil, 456</td>
+            <td>www.oficinaw.com</td>
+            <td>23</td>
+            <td>Mecânica, Auto</td>
+            <td>Telefone</td>
+            <td>2025-06-06 13:30</td>
+            <td>45m</td>
+          </tr>
+          <tr data-id="5" data-classificacao="3.5">
+            <td>Academia Y</td>
+            <td>(11) 9555-6789</td>
+            <td>Rua dos Esportes, 78</td>
+            <td>www.academiay.com</td>
+            <td>56</td>
+            <td>Fitness, Saúde</td>
+            <td>WhatsApp</td>
+            <td>2025-06-06 14:15</td>
+            <td>20m</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-      tabelaHTML += '</tbody></table>';
-      container.innerHTML = tabelaHTML;
+    <!-- 4. DETALHES DO LEAD SELECIONADO -->
+    <div class="lead-detail-container">
+      <!-- Telefone do Lead -->
+      <div class="lead-detail-item">
+        <div class="detail-header">Telefone</div>
+        <div class="detail-content" id="detail-telefone">
+          (11) 0 0000-0000
+        </div>
+      </div>
+
+      <!-- Classificação -->
+      <div class="lead-detail-item">
+        <div class="detail-header">Classificação</div>
+        <div class="detail-content" id="detail-classificacao">
+          —
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. TABELA DE MENSAGENS DO LEAD × ROBO -->
+    <div class="messages-container">
+      <table class="messages-table" id="messages-table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Mensagem do Robô</th>
+            <th>Mensagem do Lead</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Começa vazio; será preenchido via JS ao selecionar um Lead -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===========================
+     6. SCRIPT DE INTERAÇÃO E EXEMPLO DE MENSAGENS
+     (você substituirá pelos dados reais do Supabase)
+  ============================ -->
+  <script>
+    // Exemplo de dados de mensagem para cada Lead (key = data-id da linha)
+    const messagesData = {
+      "1": [
+        { timestamp: "10:00", robo: "Olá! Sou o Robô da Lead Aizy. Como posso ajudar?", lead: "Gostaria de saber o preço." },
+        { timestamp: "10:05", robo: "Nosso pacote inicial é R$ 200. Deseja agendar uma demonstração?", lead: "Sim, dia 07 às 14h funciona?" },
+        { timestamp: "10:10", robo: "Perfeito, agendado para 07/06 às 14h. Qualquer dúvida me avise!", lead: "Obrigado!" }
+      ],
+      "2": [
+        { timestamp: "11:00", robo: "Olá! Sou o Robô da Lead Aizy. Em que posso ajudar?", lead: "Quero orçar um kit promocional." },
+        { timestamp: "11:05", robo: "O kit promocional sai por R$ 150. Deseja comprar agora?", lead: "Ainda não, vamos conversar depois." },
+        { timestamp: "11:10", robo: "Sem problemas. Estarei por aqui se precisar.", lead: "Ok, obrigado!" }
+      ],
+      "3": [
+        { timestamp: "12:00", robo: "Bom dia! Aqui é o suporte Aizy. Posso ajudar em algo?", lead: "Vocês fazem integração com ERP?" },
+        { timestamp: "12:07", robo: "Sim, integramos com a maioria dos ERPs. Qual o nome do seu sistema?", lead: "Uso o Sistema Z9." },
+        { timestamp: "12:12", robo: "Ótimo! Suporte Z9 disponível. Agendamos uma call?", lead: "Pode ser amanhã às 10h." }
+      ],
+      "4": [
+        { timestamp: "13:00", robo: "Olá! Como posso ajudar hoje?", lead: "Estou interessado em automações." },
+        { timestamp: "13:05", robo: "Perfeito, temos diversos pacotes. Prefere chat ou ligação?", lead: "Chat mesmo." },
+        { timestamp: "13:10", robo: "Vou enviar um link com detalhes. Fique à vontade para ver.", lead: "Recebi, obrigado!" }
+      ],
+      "5": [
+        { timestamp: "14:00", robo: "Oi! Aqui é o Robô da Lead Aizy. Qual sua dúvida?", lead: "Quero saber sobre pagamentos recorrentes." },
+        { timestamp: "14:05", robo: "Trabalhamos com Stripe e PagSeguro. Qual prefere?", lead: "Prefiro PagSeguro." },
+        { timestamp: "14:10", robo: "Beleza, vou enviar as instruções para PagSeguro.", lead: "Ótimo, obrigado!" }
+      ]
+    };
+
+    const leadsTbody = document.querySelector("#leads-table tbody");
+    const detailTel = document.getElementById("detail-telefone");
+    const detailClass = document.getElementById("detail-classificacao");
+    const messagesTbody = document.querySelector("#messages-table tbody");
+
+    // Função genérica para tratar clique ou toque na linha
+    function handleLeadSelection(e) {
+      const tr = e.target.closest("tr");
+      if (!tr) return;
+
+      // Telefone agora está em children[1] (segunda coluna)
+      const telefone = tr.children[1].innerText.trim();
+      // Classificação via data-classificacao
+      const classificacao = tr.dataset.classificacao || "—";
+
+      // Atualiza bloco de detalhes
+      detailTel.innerText = telefone;
+      detailClass.innerText = classificacao;
+
+      // Preenche a tabela de mensagens para este lead
+      const leadId = tr.dataset.id;
+      populateMessages(leadId);
     }
 
-    // 4. Executar a busca assim que a página carregar
-    window.addEventListener('DOMContentLoaded', () => {
-      fetchDados();
+    // Função para preencher as mensagens de acordo com o lead selecionado
+    function populateMessages(leadId) {
+      // Limpa o conteúdo atual
+      messagesTbody.innerHTML = "";
+
+      // Puxa o array de mensagens daquele lead (se existir)
+      const msgs = messagesData[leadId] || [];
+
+      // Insere cada linha de mensagem
+      msgs.forEach(({ timestamp, robo, lead }) => {
+        const tr = document.createElement("tr");
+
+        // Timestamp
+        const tdTime = document.createElement("td");
+        tdTime.innerText = timestamp;
+        tr.appendChild(tdTime);
+
+        // Mensagem do Robô
+        const tdRobo = document.createElement("td");
+        tdRobo.innerText = robo;
+        tr.appendChild(tdRobo);
+
+        // Mensagem do Lead
+        const tdLead = document.createElement("td");
+        tdLead.innerText = lead;
+        tr.appendChild(tdLead);
+
+        messagesTbody.appendChild(tr);
+      });
+    }
+
+    // Adiciona listener para 'click' e para 'touchstart' no tbody de leads
+    leadsTbody.addEventListener("click", handleLeadSelection);
+    leadsTbody.addEventListener("touchstart", handleLeadSelection);
+
+    // Ao carregar a página, seleciona automaticamente o primeiro lead
+    window.addEventListener("DOMContentLoaded", () => {
+      const primeiraLinha = leadsTbody.querySelector("tr");
+      if (primeiraLinha) {
+        primeiraLinha.click();
+      }
+      // Ajusta a quantidade total de leads automaticamente
+      document.getElementById("qtd-leads-value").innerText = leadsTbody.rows.length;
     });
   </script>
 </body>
