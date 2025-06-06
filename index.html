@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lista de Clientes - Supabase</title>
+  <style>
+    /* styling básico só pra deixar legível */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #fafafa;
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dados de Clientes (Supabase)</h1>
+  <div id="resultado">
+    <!-- A Tabela com os dados vindos do Supabase será injetada aqui -->
+    <p>Carregando dados…</p>
+  </div>
+
+  <!-- 1) Importa o SDK do Supabase JS via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.29.0/dist/umd/index.min.js"></script>
+
+  <!-- 2) Nosso código customizado vai aqui -->
+  <script>
+    // 1. Inicializar o Supabase Client com suas credenciais
+    const SUPABASE_URL = 'https://rynfsckraunchdtxqfhu.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5bmZzY2tyYXVuY2hkdHhxZmh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxMTM3MjcsImV4cCI6MjA2MTY4OTcyN30.3fT003TXrurai77kaX4TogPjyirMBQRuQPYfuaeyfWE
+';
+
+    // Cria o client
+    const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // 2. Função para buscar os dados da tabela
+    async function fetchDados() {
+      // Substitua 'nome_da_tabela' pelo nome real da sua tabela no Supabase
+      const { data, error } = await supabase
+        .from('Capturas_google_maps')
+        .select(`
+          cliente_solicitante,
+          instancia_evo,
+          nome_da_empresa,
+          telefone,
+          endereco,
+          website,
+          rating,
+          reviews,
+          especialidades,
+          mensagem,
+          disparo,
+          data_envio,
+          delay
+        `)
+        .order('data_envio', { ascending: false }); // ex.: ordenar pela data de envio
+
+      if (error) {
+        console.error('Erro ao buscar dados:', error);
+        document.getElementById('resultado').innerHTML = `<p style="color:red">Erro ao carregar dados: ${error.message}</p>`;
+        return;
+      }
+
+      // 3. Montar dinamicamente uma tabela HTML com os resultados
+      montarTabela(data);
+    }
+
+    // 3. Função para criar uma tabela HTML a partir do array de objetos retornado
+    function montarTabela(registros) {
+      const container = document.getElementById('resultado');
+      if (!registros || registros.length === 0) {
+        container.innerHTML = '<p>Nenhum registro encontrado.</p>';
+        return;
+      }
+
+      // Cria elemento <table> e <thead>
+      let tabelaHTML = '<table>';
+      tabelaHTML += `
+        <thead>
+          <tr>
+            <th>Cliente Solicitante</th>
+            <th>Instância Evo</th>
+            <th>Nome da Empresa</th>
+            <th>Telefone</th>
+            <th>Endereço</th>
+            <th>Website</th>
+            <th>Rating</th>
+            <th>Reviews</th>
+            <th>Especialidades</th>
+            <th>Mensagem</th>
+            <th>Disparo</th>
+            <th>Data Envio</th>
+            <th>Delay</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+
+      // Para cada objeto “registro” vindo do Supabase, criamos uma <tr>
+      registros.forEach(registro => {
+        tabelaHTML += `
+          <tr>
+            <td>${registro.cliente_solicitante ?? ''}</td>
+            <td>${registro.instancia_evo ?? ''}</td>
+            <td>${registro.nome_da_empresa ?? ''}</td>
+            <td>${registro.telefone ?? ''}</td>
+            <td>${registro.endereco ?? ''}</td>
+            <td>${registro.website ?? ''}</td>
+            <td>${registro.rating ?? ''}</td>
+            <td>${registro.reviews ?? ''}</td>
+            <td>${registro.especialidades ?? ''}</td>
+            <td>${registro.mensagem ?? ''}</td>
+            <td>${registro.disparo ?? ''}</td>
+            <td>${registro.data_envio ? new Date(registro.data_envio).toLocaleString() : ''}</td>
+            <td>${registro.delay ?? ''}</td>
+          </tr>
+        `;
+      });
+
+      tabelaHTML += '</tbody></table>';
+      container.innerHTML = tabelaHTML;
+    }
+
+    // 4. Executar a busca assim que a página carregar
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchDados();
+    });
+  </script>
+</body>
+</html>
