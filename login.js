@@ -12,19 +12,23 @@ async function validarInstancia() {
     return;
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('Capturas_google_maps')
     .select('cliente_solicitante')
     .eq('instancia_evo', instancia)
     .limit(1);
 
   if (error || data.length === 0) {
-    erroMsg.textContent = 'Instância não encontrada. Verifique com o suporte.';
+    erroMsg.textContent = 'Instância não encontrada.';
     return;
   }
 
-  // Encontrou a empresa correta
   const empresa = data[0].cliente_solicitante;
+
+  // Salva no localStorage para usar no dashboard
   localStorage.setItem('empresaSelecionada', empresa);
-  window.location.href = 'index.html';
+  localStorage.setItem('instanciaSelecionada', instancia);
+
+  // Redireciona ao dashboard
+  window.location.href = 'dashboard.html';
 }
