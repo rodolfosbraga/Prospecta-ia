@@ -74,3 +74,9 @@ async function carregarLeads() {
 }
 
 window.addEventListener('DOMContentLoaded', carregarLeads);
+
+function sair() {
+  localStorage.removeItem('empresaSelecionada');
+  localStorage.removeItem('instanciaSelecionada');
+  window.location.href = 'index.html';
+}
