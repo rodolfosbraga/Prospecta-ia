@@ -17,7 +17,10 @@ async function carregarLeads() {
   const tbody = document.querySelector('#leads-table tbody');
   const empresaValue = document.getElementById('empresa-value');
   const qtdValue = document.getElementById('qtd-leads-value');
+  const mensagensTbody = document.querySelector('#messages-table tbody');
+
   tbody.innerHTML = '';
+  mensagensTbody.innerHTML = `<tr><td colspan="3">Selecione um lead para ver detalhes</td></tr>`;
 
   data.forEach((lead) => {
     const tr = document.createElement('tr');
@@ -32,13 +35,21 @@ async function carregarLeads() {
       <td>${lead.reviews}</td>
       <td>${lead.especialidades}</td>
       <td>${lead.disparo}</td>
-      <td>${lead.data_envio}</td>
       <td>${lead.delay}</td>
     `;
 
     tr.addEventListener('click', () => {
       document.getElementById('detail-telefone').innerText = lead.telefone || '—';
       document.getElementById('detail-classificacao').innerText = lead.rating || '—';
+
+      // Popula a tabela de mensagens com data_envio e mensagem_robo
+      mensagensTbody.innerHTML = `
+        <tr>
+          <td>${lead.data_envio || '—'}</td>
+          <td>${lead.mensagem_robo || '—'}</td>
+          <td>—</td>
+        </tr>
+      `;
     });
 
     tbody.appendChild(tr);
