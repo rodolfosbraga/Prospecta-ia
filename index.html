@@ -3,20 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Validação de Instância</title>
+  <title>Acesso ao Dashboard</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="dashboard">
     <div class="dashboard-title">
-      <h1>Acesso ao Dashboard</h1>
+      <h1>ACESSO AO DASHBOARD</h1>
     </div>
 
     <div class="header-blocks">
       <div class="header-item">
         <div class="item-header">Informe sua instância</div>
         <div class="item-content">
-          <input type="text" id="instanciaInput" placeholder="ex: rodolfo_01" style="width: 80%; padding: 8px;">
+          <input
+            type="text"
+            id="instanciaInput"
+            placeholder="Insira sua instância fornecida pelo WhatsApp"
+            style="width: 80%; padding: 8px;"
+          />
           <br /><br />
           <button onclick="validarInstancia()" style="padding: 10px;">Entrar</button>
           <p id="erroMsg" style="color: red; margin-top: 10px;"></p>
