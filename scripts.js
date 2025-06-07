@@ -2,6 +2,8 @@ const supabaseUrl = 'https://rynfsckraunchdtxqfhu.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5bmZzY2tyYXVuY2hkdHhxZmh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxMTM3MjcsImV4cCI6MjA2MTY4OTcyN30.3fT003TXrurai77kaX4TogPjyirMBQRuQPYfuaeyfWE'; // sua chave inteira aqui
 
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+// Defina aqui a empresa cujo dashboard será exibido:
+const empresaSelecionada = 'Rodolfo Teste 2';
 
 async function carregarLeads() {
   const { data, error } = await supabaseClient
@@ -14,6 +16,11 @@ async function carregarLeads() {
     return;
   }
 
+  // 🔍 FILTRA SOMENTE OS LEADS DA EMPRESA ATUAL
+  const dadosFiltrados = data.filter(
+    lead => lead.cliente_solicitante === empresaSelecionada
+  );
+
   const tbody = document.querySelector('#leads-table tbody');
   const empresaValue = document.getElementById('empresa-value');
   const qtdValue = document.getElementById('qtd-leads-value');
@@ -22,7 +29,7 @@ async function carregarLeads() {
   tbody.innerHTML = '';
   mensagensTbody.innerHTML = `<tr><td colspan="3">Selecione um lead para ver detalhes</td></tr>`;
 
-  data.forEach((lead) => {
+  dadosFiltrados.forEach((lead) => {
     const tr = document.createElement('tr');
     tr.dataset.classificacao = lead.rating || '—';
     tr.dataset.telefone = lead.telefone || '—';
@@ -42,7 +49,6 @@ async function carregarLeads() {
       document.getElementById('detail-telefone').innerText = lead.telefone || '—';
       document.getElementById('detail-classificacao').innerText = lead.rating || '—';
 
-      // Popula a tabela de mensagens com data_envio e mensagem_robo
       mensagensTbody.innerHTML = `
         <tr>
           <td>${lead.data_envio || '—'}</td>
@@ -55,8 +61,9 @@ async function carregarLeads() {
     tbody.appendChild(tr);
   });
 
-  empresaValue.innerText = data[0]?.cliente_solicitante || '—';
-  qtdValue.innerText = data.length;
+  // Atualiza os blocos de contagem e nome da empresa
+  empresaValue.innerText = empresaSelecionada;
+  qtdValue.innerText = dadosFiltrados.length;
 }
 
 window.addEventListener('DOMContentLoaded', carregarLeads);
