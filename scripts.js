@@ -3,7 +3,11 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 // Defina aqui a empresa cujo dashboard será exibido:
-const empresaSelecionada = 'Rodolfo Teste 2';
+const empresaSelecionada = localStorage.getItem('empresaSelecionada') || '';
+if (!empresaSelecionada) {
+  window.location.href = 'login.html';
+  return;
+}
 
 async function carregarLeads() {
   const { data, error } = await supabaseClient
