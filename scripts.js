@@ -3,10 +3,11 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 // Defina aqui a empresa cujo dashboard será exibido:
-const empresaSelecionada = localStorage.getItem('empresaSelecionada') || '';
-if (!empresaSelecionada) {
+const empresaSelecionada = localStorage.getItem('empresaSelecionada');
+const instanciaSelecionada = localStorage.getItem('instanciaSelecionada');
+
+if (!empresaSelecionada || !instanciaSelecionada) {
   window.location.href = 'login.html';
-  return;
 }
 
 async function carregarLeads() {
@@ -22,7 +23,9 @@ async function carregarLeads() {
 
   // 🔍 FILTRA SOMENTE OS LEADS DA EMPRESA ATUAL
   const dadosFiltrados = data.filter(
-    lead => lead.cliente_solicitante === empresaSelecionada
+  lead =>
+    lead.cliente_solicitante === empresaSelecionada &&
+    lead.instancia_evo === instanciaSelecionada
   );
 
   const tbody = document.querySelector('#leads-table tbody');
