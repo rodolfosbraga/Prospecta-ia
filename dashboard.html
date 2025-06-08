@@ -20,49 +20,55 @@
       </div>
 
       <div class="header-item">
-        <div class="item-header">Qtd de Leads Capturadas</div>
+        <div class="item-header">Qtd de Leads Capturados</div>
         <div class="item-content" id="qtd-leads-value">0</div>
       </div>
     </div>
 
+      <div class="header-item">
+        <div class="item-header">Limite do Plano</div>
+        <div class="item-content" id="limite-value">—</div>
+      </div>
+    </div>
+   
     <div class="table-container">
       <table class="leads-table" id="leads-table">
         <thead>
-          <tr>
-            <th>Lead</th>
-            <th>Telefone</th>
-            <th>Endereço</th>
-            <th>Website</th>
-            <th>Reviews</th>
-            <th>Especialidades</th>
-            <th>Disparo</th>
-            <th>Delay</th> <!-- Data Envio removido -->
-          </tr>
+    <tr>
+    <th>Lead</th>
+      <th>Telefone</th>
+      <th>Endereço</th>
+      <th>Website</th>
+      <th>Reviews</th>
+      <th>Classificação</th> 
+    </tr>
         </thead>
         <tbody></tbody>
       </table>
     </div>
 
-    <div class="lead-detail-container">
-      <div class="lead-detail-item">
-        <div class="detail-header">Telefone</div>
-        <div class="detail-content" id="detail-telefone">—</div>
-      </div>
-      <div class="lead-detail-item">
-        <div class="detail-header">Classificação</div>
-        <div class="detail-content" id="detail-classificacao">—</div>
-      </div>
-    </div>
+<div class="lead-detail-container">
+  <div class="lead-detail-item">
+    <div class="detail-header">Telefone</div>
+    <div class="detail-content" id="detail-telefone">—</div>
+  </div>
+  <div class="lead-detail-item">
+    <div class="detail-header">Especialidades</div>
+    <div class="detail-content" id="detail-especialidades">—</div>
+  </div>
+</div>
 
     <div class="messages-container">
       <table class="messages-table" id="messages-table">
-        <thead>
-          <tr>
-            <th>Timestamp</th>
-            <th>Mensagem do Robô</th>
-            <th>Mensagem do Lead</th>
-          </tr>
-        </thead>
+     <thead>
+  <tr>
+    <th>Timestamp</th>
+    <th>Mensagem do Robô</th>
+    <th>Mensagem do Lead</th>
+    <th>Disparo</th>
+    <th>Delay</th>
+  </tr>
+</thead>
         <tbody>
           <tr><td colspan="3">Sem mensagens disponíveis</td></tr>
         </tbody>
