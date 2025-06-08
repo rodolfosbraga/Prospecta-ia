@@ -122,20 +122,25 @@ tbody td {
 }
 
 @media (max-width: 768px) {
-  .header-blocks,
-  .lead-detail-container {
-    flex-direction: column;
-  }
-
-  .table-container,
-  .messages-container {
-    height: auto;
-    overflow-x: auto;
-  }
-
-  thead th,
-  tbody td {
-    font-size: 0.8rem;
-    padding: 8px;
-  }
+/* Ajustes visuais adicionais */
+.header-blocks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
 }
+
+.header-item {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* Espaço entre componentes marcados com # */
+.table-container {
+  margin-top: 12px;
+}
+
+.lead-detail-container {
+  margin-top: 12px;
+  gap: 20px;
+}  
