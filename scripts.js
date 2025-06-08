@@ -21,25 +21,25 @@ async function carregarLeads() {
     return;
   }
 
-  // 🔍 FILTRA SOMENTE OS LEADS DA EMPRESA ATUAL
   const dadosFiltrados = data.filter(
-  lead =>
-    lead.cliente_solicitante === empresaSelecionada &&
-    lead.instancia_evo === instanciaSelecionada
+    lead =>
+      lead.cliente_solicitante === empresaSelecionada &&
+      lead.instancia_evo === instanciaSelecionada
   );
 
   const tbody = document.querySelector('#leads-table tbody');
   const empresaValue = document.getElementById('empresa-value');
   const qtdValue = document.getElementById('qtd-leads-value');
+  const limiteValue = document.getElementById('limite-value');
   const mensagensTbody = document.querySelector('#messages-table tbody');
 
   tbody.innerHTML = '';
-  mensagensTbody.innerHTML = `<tr><td colspan="3">Selecione um lead para ver detalhes</td></tr>`;
+  mensagensTbody.innerHTML = `<tr><td colspan="5">Selecione um lead para ver detalhes</td></tr>`;
 
   dadosFiltrados.forEach((lead) => {
     const tr = document.createElement('tr');
-    tr.dataset.classificacao = lead.rating || '—';
     tr.dataset.telefone = lead.telefone || '—';
+    tr.dataset.especialidades = lead.especialidades || '—';
 
     tr.innerHTML = `
       <td>${lead.nome_da_empresa}</td>
@@ -47,20 +47,20 @@ async function carregarLeads() {
       <td>${lead.endereco}</td>
       <td>${lead.webite}</td>
       <td>${lead.reviews}</td>
-      <td>${lead.especialidades}</td>
-      <td>${lead.disparo}</td>
-      <td>${lead.delay}</td>
+      <td>${lead.classificacao || lead.rating || '—'}</td>
     `;
 
     tr.addEventListener('click', () => {
       document.getElementById('detail-telefone').innerText = lead.telefone || '—';
-      document.getElementById('detail-classificacao').innerText = lead.rating || '—';
+      document.getElementById('detail-especialidades').innerText = lead.especialidades || '—';
 
       mensagensTbody.innerHTML = `
         <tr>
           <td>${lead.data_envio || '—'}</td>
           <td>${lead.mensagem_robo || '—'}</td>
           <td>—</td>
+          <td>${lead.disparo || '—'}</td>
+          <td>${lead.delay || '—'}</td>
         </tr>
       `;
     });
@@ -68,9 +68,9 @@ async function carregarLeads() {
     tbody.appendChild(tr);
   });
 
-  // Atualiza os blocos de contagem e nome da empresa
   empresaValue.innerText = empresaSelecionada;
   qtdValue.innerText = dadosFiltrados.length;
+  limiteValue.innerText = dadosFiltrados[0]?.limite_plano || '—';
 }
 
 window.addEventListener('DOMContentLoaded', carregarLeads);
