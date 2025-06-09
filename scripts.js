@@ -45,7 +45,7 @@ async function carregarLeads() {
       <td>${lead.nome_da_empresa}</td>
       <td>${lead.telefone}</td>
       <td>${lead.endereco}</td>
-      <td>${lead.webite}</td>
+      <td>${lead.website}</td>
       <td>${lead.reviews}</td>
       <td>${lead.classificacao || lead.rating || '—'}</td>
     `;
