@@ -38,12 +38,12 @@ async function carregarLeads() {
 
   dadosFiltrados.forEach((lead) => {
     const tr = document.createElement('tr');
-    tr.dataset.telefone = lead.telefone || '—';
+    tr.dataset.telefone_google = lead.telefone_google || '—';
     tr.dataset.especialidades = lead.especialidades || '—';
 
     tr.innerHTML = `
       <td>${lead.nome_da_empresa}</td>
-      <td>${lead.telefone}</td>
+      <td>${lead.telefone_google}</td>
       <td>${lead.endereco}</td>
       <td>${lead.website}</td>
       <td>${lead.reviews}</td>
@@ -51,7 +51,7 @@ async function carregarLeads() {
     `;
 
     tr.addEventListener('click', () => {
-      document.getElementById('detail-telefone').innerText = lead.telefone || '—';
+      document.getElementById('detail-telefone_google').innerText = lead.telefone_google || '—';
       document.getElementById('detail-especialidades').innerText = lead.especialidades || '—';
 
       mensagensTbody.innerHTML = `
