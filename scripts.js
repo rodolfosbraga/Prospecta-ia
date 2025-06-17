@@ -51,7 +51,7 @@ async function carregarLeads() {
     `;
 
     tr.addEventListener('click', () => {
-      document.getElementById('detail-telefone_google').innerText = lead.telefone_google || '—';
+      document.getElementById('detail-telefone').innerText = lead.telefone_google || '—';
       document.getElementById('detail-especialidades').innerText = lead.especialidades || '—';
 
       mensagensTbody.innerHTML = `
